@@ -28,7 +28,6 @@ private:
   // Edge description
   class Edge{
   public:
-
     unsigned _first_vertex_id;
     unsigned _second_vertex_id;
     
@@ -48,7 +47,7 @@ private:
     void log() const{
       std::cout << _first_vertex_id << "->"
                 << _second_vertex_id
-                << std::endl;
+                << " ; ";
     };
   };
 
@@ -65,7 +64,11 @@ public:
 
   void add_vertex(unsigned id, unsigned weight);
 
+  void remove_vertex(unsigned id);
+
   void add_edge(unsigned first_vertex_id, unsigned second_vertex_id);
+
+  void remove_edge(unsigned first_vertex_id, unsigned second_vertex_id);
 
   void log() const;
 };

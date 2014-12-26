@@ -48,7 +48,6 @@ int main(int argc, char **argv){
       break;
         
     default:
-      /* You won't actually get here. */
       break;
     }
     
@@ -65,7 +64,14 @@ int main(int argc, char **argv){
   g.add_edge(1, 2);
   g.add_edge(2, 3);
   g.add_edge(2, 4);
-  g.add_edge(4, 2);
+
+  // g.add_vertex(5, 1);
+  // g.add_edge(1, 5);
+  // g.add_edge(2, 5);
+  // g.add_edge(3, 5);
+
+  // g.remove_edge(1, 5);
+  // g.remove_vertex(5);
 
   if(globalArgs.verbose){
     g.log();
