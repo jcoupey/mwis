@@ -39,6 +39,10 @@ void UndirectedGraph::remove_vertex(unsigned id){
   }
 };
 
+bool UndirectedGraph::has_vertex(unsigned vertex_id) const{
+  return _vertices.find(vertex_id) != _vertices.end();
+}
+
 void UndirectedGraph::add_edge(unsigned first_vertex_id,
                                unsigned second_vertex_id){
   if(first_vertex_id == second_vertex_id){
@@ -66,6 +70,33 @@ void UndirectedGraph::remove_edge(unsigned first_vertex_id,
   auto second_vertex_pair = _vertices.find(second_vertex_id);
   first_vertex_pair->second._degree--;
   second_vertex_pair->second._degree--;
+};
+
+bool UndirectedGraph::has_edge(unsigned first_vertex_id,
+                               unsigned second_vertex_id) const{
+  Edge target_edge (first_vertex_id, second_vertex_id);
+  auto target = _edges.find(target_edge);
+  return target != _edges.end();
+};
+
+bool UndirectedGraph::has_path(const std::list<unsigned>& vertex_ids) const{
+  // Case of an empty path or a path with a single vertex
+  if(vertex_ids.size() < 2){
+    return vertex_ids.empty()
+      or this->has_vertex(vertex_ids.front());
+  }
+  // General case
+  auto first_id_iter = vertex_ids.cbegin();
+  auto second_id_iter = ++vertex_ids.cbegin();
+  while(second_id_iter != vertex_ids.end()){
+    if(! this->has_edge(*first_id_iter, *second_id_iter)){
+      // No edge exists between current two vertices
+      return false;
+    }
+    first_id_iter++;
+    second_id_iter++;
+  }
+  return true;
 };
 
 void UndirectedGraph::log() const{

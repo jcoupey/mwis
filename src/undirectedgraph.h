@@ -4,6 +4,7 @@
 #include <iostream>
 #include <algorithm>
 #include <set>
+#include <list>
 #include <map>
 
 class UndirectedGraph{
@@ -66,9 +67,15 @@ public:
 
   void remove_vertex(unsigned id);
 
+  bool has_vertex(unsigned vertex_id) const;
+
   void add_edge(unsigned first_vertex_id, unsigned second_vertex_id);
 
   void remove_edge(unsigned first_vertex_id, unsigned second_vertex_id);
+
+  bool has_edge(unsigned first_vertex_id, unsigned second_vertex_id) const;
+  
+  bool has_path(const std::list<unsigned>& edge_ids) const;
 
   void log() const;
 };
