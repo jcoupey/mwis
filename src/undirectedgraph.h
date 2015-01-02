@@ -71,6 +71,8 @@ public:
 
   bool has_vertex(unsigned vertex_id) const;
 
+  std::list<unsigned> neighbours_for_vertex(unsigned vertex_id) const;
+
   void add_edge(unsigned first_vertex_id, unsigned second_vertex_id);
 
   void remove_edge(unsigned first_vertex_id, unsigned second_vertex_id);

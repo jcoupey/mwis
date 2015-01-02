@@ -41,7 +41,22 @@ void UndirectedGraph::remove_vertex(unsigned id){
 
 bool UndirectedGraph::has_vertex(unsigned vertex_id) const{
   return _vertices.find(vertex_id) != _vertices.end();
-}
+};
+
+std::list<unsigned> UndirectedGraph::neighbours_for_vertex(unsigned vertex_id) const{
+  if(! this->has_vertex(vertex_id)){
+    throw ArgsErrorException("Not a valid vertex id!");
+  }
+  std::list<unsigned> neighbours;
+  for(auto vertex_pair = _vertices.cbegin();
+      vertex_pair != _vertices.cend();
+      vertex_pair++){
+    if(this->has_edge(vertex_id, vertex_pair->first)){
+      neighbours.push_back(vertex_pair->first);
+    }
+  }
+  return neighbours;
+};
 
 void UndirectedGraph::add_edge(unsigned first_vertex_id,
                                unsigned second_vertex_id){
