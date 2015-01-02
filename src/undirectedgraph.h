@@ -6,6 +6,8 @@
 #include <set>
 #include <list>
 #include <map>
+#include <array>
+#include "exceptions.h"
 
 class UndirectedGraph{
 private:
@@ -76,6 +78,8 @@ public:
   bool has_edge(unsigned first_vertex_id, unsigned second_vertex_id) const;
   
   bool has_path(const std::list<unsigned>& edge_ids) const;
+
+  std::list<unsigned> mwis_for_path(const std::list<unsigned>& path) const;
 
   void log() const;
 };

@@ -80,8 +80,9 @@ bool UndirectedGraph::has_edge(unsigned first_vertex_id,
 };
 
 bool UndirectedGraph::has_path(const std::list<unsigned>& vertex_ids) const{
+  unsigned vertex_ids_size = vertex_ids.size();
   // Case of an empty path or a path with a single vertex
-  if(vertex_ids.size() < 2){
+  if(vertex_ids_size < 2){
     return vertex_ids.empty()
       or this->has_vertex(vertex_ids.front());
   }
@@ -96,11 +97,87 @@ bool UndirectedGraph::has_path(const std::list<unsigned>& vertex_ids) const{
     first_id_iter++;
     second_id_iter++;
   }
+
+  // Filtering the case where the path contains a cycle by removing
+  // duplicates ids
+  std::list<unsigned> vertex_ids_copy (vertex_ids);
+  vertex_ids_copy.sort();
+  vertex_ids_copy.unique();
+  if(vertex_ids_size != vertex_ids_copy.size()){
+    return false;
+  }
+  
   return true;
 };
 
+std::list<unsigned> UndirectedGraph::mwis_for_path(const std::list<unsigned>& path) const{
+  if(! this->has_path(path)){
+    throw ArgsErrorException("Not a valid path!");
+  }
+
+  const unsigned path_size = path.size();
+  auto path_iter = path.cbegin();
+
+  unsigned* max_weight;
+  max_weight = new unsigned [path_size];
+
+  if(path_size >= 1){
+    // Max weight of an independent set for a path of length 1 is the
+    // weight of the first vertex
+    max_weight[0] = _vertices.find(*path_iter)->second._weight;
+    path_iter++;
+  }
+
+  if(path_size >= 2){
+    // Max weight of an independent set for a path of length 2 is the
+    // max weight of the first two vertices
+    max_weight[1] = std::max(max_weight[0],
+                             _vertices.find(*path_iter)->second._weight);
+    path_iter++;
+  }
+
+  // Computing maximum weight of an independent set for first i
+  // elements of path
+  for(int i = 2; i < path_size; i++){
+    // Max weight unchanged if element i is not in a mwis for
+    // path[0..i]. Else its weight is added to the max weight for an
+    // independent set for path[0..i-2].
+    max_weight[i] = std::max(max_weight[i - 1],
+                             max_weight[i - 2]
+                             + _vertices.find(*path_iter)->second._weight);
+    path_iter++;
+  }
+
+  // Building the independent set backwards from the max weight
+  // evolutions
+  std::list<unsigned> mwis;
+  // Browsing path backward
+  auto path_backward_iter = path.crbegin();
+  int index = path_size - 1;
+  while(index >= 1){
+    if(max_weight[index] == max_weight[index - 1]){
+      // std::cout << index << " = ;  " << *path_backward_iter << std::endl;
+      index--;
+      ++path_backward_iter;
+    }
+    else{
+      // std::cout << index << " != ; " << *path_backward_iter << std::endl;
+      mwis.push_front(*path_backward_iter);
+      index -= 2;
+      ++path_backward_iter;
+      ++path_backward_iter;
+    }
+  }
+  if(index == 0){
+    mwis.push_front(*path_backward_iter);
+  }
+
+  delete[] max_weight;
+  return mwis;
+};
+
 void UndirectedGraph::log() const{
-  std::cout << "********** Graph log **********\n"
+  std::cout << "****************** Graph log ******************\n"
     << "* Vertices:\n";
   for(auto vertex = _vertices.begin(); vertex != _vertices.end(); vertex++){
     std::cout << "** Id: "
@@ -114,5 +191,5 @@ void UndirectedGraph::log() const{
   for(auto edge = _edges.begin(); edge != _edges.end(); edge++){
     edge->log();
   }
-  std::cout << std::endl << "*******************************\n";
+  std::cout << std::endl;
 };
