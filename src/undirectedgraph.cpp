@@ -58,6 +58,17 @@ std::list<unsigned> UndirectedGraph::neighbours_for_vertex(unsigned vertex_id) c
   return neighbours;
 };
 
+unsigned UndirectedGraph::weight_of_set(const std::list<unsigned>& vertex_set) const{
+  unsigned weight = 0;
+  for(auto vertex = vertex_set.begin(); vertex != vertex_set.end(); vertex++){
+    auto vertex_in_map = _vertices.find(*vertex);
+    if(vertex_in_map != _vertices.end()){
+      weight += vertex_in_map->second._weight;
+    }
+  }
+  return weight;
+};
+
 void UndirectedGraph::add_edge(unsigned first_vertex_id,
                                unsigned second_vertex_id){
   if(first_vertex_id == second_vertex_id){
@@ -189,6 +200,56 @@ std::list<unsigned> UndirectedGraph::mwis_for_path(const std::list<unsigned>& pa
 
   delete[] max_weight;
   return mwis;
+};
+
+std::list<unsigned> UndirectedGraph::mwis_greedy_gwmin(){
+  // Copy of current objet to further restore its state, should
+  // definitely be improved
+  UndirectedGraph g (*this);
+
+  // Independent set to return
+  std::list<unsigned> is;
+
+  while(this->number_of_vertices() > 0){
+    auto vertex_iter = _vertices.cbegin();
+
+    // Greedy choice for a vertex
+    unsigned chosen_vertex_id = vertex_iter->first;
+    double chosen_vertex_value
+      = (double) vertex_iter->second._weight / (vertex_iter->second._degree + 1);
+
+    ++vertex_iter;
+    for(; vertex_iter != _vertices.cend(); ++vertex_iter){
+      double current_value
+        = (double) vertex_iter->second._weight / (vertex_iter->second._degree + 1);
+      if(current_value > chosen_vertex_value){
+        // Better choice for greedy algorithm
+        chosen_vertex_id = vertex_iter->first;
+        chosen_vertex_value = current_value;
+      }
+    }
+
+    // Adding chosen vertex to the independent set
+    is.push_back(chosen_vertex_id);
+    
+    // Removing the vertex and its neighbours from the graph
+    std::list<unsigned> neighbours
+      = this->neighbours_for_vertex(chosen_vertex_id);
+    this->remove_vertex(chosen_vertex_id);
+    for(auto vertex = neighbours.begin();
+        vertex != neighbours.end();
+        vertex++){
+      this->remove_vertex(*vertex);
+    }
+    // Uncomment to log state of the updated graph with removed vertex
+    // and neighbours
+    // this->log();
+  }
+  
+  // Restore the state of the current graph
+  *this = g;
+  
+  return is;
 };
 
 void UndirectedGraph::log() const{

@@ -2,13 +2,14 @@
 #include <set>
 #include <list>
 #include <chrono>
+#include <random>
 #include <unistd.h>
 #include "undirectedgraph.h"
 #include "exceptions.h"
 
 void display_usage()
 {
-  std::cout << "Usage : mwis INPUT [-h] [-p]"
+  std::cout << "Usage : mwis INPUT [-h] [-p] [-g]"
             << std::endl;
   exit(1);
 }
@@ -28,6 +29,9 @@ void path_mwis(const std::list<unsigned>& path, UndirectedGraph& g){
     std::cout << *step << " ; ";
   }
   std::cout << std::endl;
+  std::cout << "** Weight of mwis: "
+            << g.weight_of_set(path_mwis)
+            << std::endl;
 };
 
 int main(int argc, char **argv){
@@ -36,11 +40,14 @@ int main(int argc, char **argv){
   struct globalArgs_t {
     // -p option
     bool path_example;
+    // -g option
+    unsigned graph_example_size;
   } globalArgs;
 
   globalArgs.path_example = false;
+  globalArgs.graph_example_size = 0;
   
-  const char* optString = "ph?";
+  const char* optString = "pg:h?";
   
   int opt = getopt(argc, argv, optString);
 
@@ -48,6 +55,9 @@ int main(int argc, char **argv){
     switch(opt) {
     case 'p':
       globalArgs.path_example = true;
+      break;
+    case 'g':
+      globalArgs.graph_example_size = atoi(optarg);
       break;
     case 'h': 
     case '?':
@@ -149,5 +159,57 @@ int main(int argc, char **argv){
     path_254136.push_back(6);
 
     path_mwis(path_254136, g);
+  }
+
+  if(globalArgs.graph_example_size > 0){
+    // Examples of a maximum weight independant set approximation for
+    // a graph
+
+    unsigned size = globalArgs.graph_example_size;
+
+    unsigned max_weight = 50;
+    double edges_rate = 0.4;
+
+    // Random generator
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine generator (seed);
+
+    // Random distribution for vertices weight
+    std::uniform_int_distribution<int> weight_distribution(1, max_weight);
+
+    // Random distribution for choosing whether or not to add an edge
+    // between two vertices
+    std::uniform_real_distribution<double> uniform_distribution(0.0, 1.0);
+    
+    // Building a graph with "size" vertices
+    UndirectedGraph g2;
+
+    for(int i = 1; i <= size; i++){
+      g2.add_vertex(i, weight_distribution(generator));
+      for(int j = 1; j < i; j++){
+        if(uniform_distribution(generator) < edges_rate){
+          // Add some edges randomly
+          g2.add_edge(i, j);
+        }
+      }
+    }
+
+    g2.log();
+
+    std::cout << "**************" << std::endl;
+    
+    std::list<unsigned> gwmin_is = g2.mwis_greedy_gwmin();
+
+    std::cout << "* GWMIN greedy algorithm"
+              << std::endl
+              << "** Independent set: ";
+
+    for(auto n = gwmin_is.begin(); n != gwmin_is.end(); n++){
+      std::cout << *n << " ; ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "** Weight: " << g2.weight_of_set(gwmin_is) << std::endl;
+
   }
 }

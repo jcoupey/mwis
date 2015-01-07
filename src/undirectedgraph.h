@@ -23,8 +23,11 @@ private:
 
     // Print vertex information
     void log() const{
-      std::cout << "Weight: " << _weight << " ; "
-                << "degree: " << _degree;
+      std::cout << "Weight: " << _weight
+                << " ; degree: " << _degree
+        // << " ; selecting value for GWMIN "
+        // << (double) _weight / (_degree + 1)
+        ;
     };
   };
   
@@ -73,6 +76,8 @@ public:
 
   std::list<unsigned> neighbours_for_vertex(unsigned vertex_id) const;
 
+  unsigned weight_of_set(const std::list<unsigned>& vertex_set) const;
+
   void add_edge(unsigned first_vertex_id, unsigned second_vertex_id);
 
   void remove_edge(unsigned first_vertex_id, unsigned second_vertex_id);
@@ -83,6 +88,8 @@ public:
 
   std::list<unsigned> mwis_for_path(const std::list<unsigned>& path) const;
 
+  std::list<unsigned> mwis_greedy_gwmin();
+  
   void log() const;
 };
 
