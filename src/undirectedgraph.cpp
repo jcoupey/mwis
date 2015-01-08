@@ -215,13 +215,11 @@ std::list<unsigned> UndirectedGraph::mwis_greedy_gwmin(){
 
     // Greedy choice for a vertex
     unsigned chosen_vertex_id = vertex_iter->first;
-    double chosen_vertex_value
-      = (double) vertex_iter->second._weight / (vertex_iter->second._degree + 1);
+    double chosen_vertex_value = vertex_iter->second.gwmin_value();
 
     ++vertex_iter;
     for(; vertex_iter != _vertices.cend(); ++vertex_iter){
-      double current_value
-        = (double) vertex_iter->second._weight / (vertex_iter->second._degree + 1);
+      double current_value = vertex_iter->second.gwmin_value();
       if(current_value > chosen_vertex_value){
         // Better choice for greedy algorithm
         chosen_vertex_id = vertex_iter->first;

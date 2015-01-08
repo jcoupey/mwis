@@ -21,12 +21,16 @@ private:
       _weight(weight),
       _degree(0){}
 
+    double gwmin_value() const{
+      return (double) _weight / (_degree + 1);
+    }
+    
     // Print vertex information
     void log() const{
       std::cout << "Weight: " << _weight
                 << " ; degree: " << _degree
-        // << " ; selecting value for GWMIN "
-        // << (double) _weight / (_degree + 1)
+                // << " ; selecting value for GWMIN "
+                // << this->gwmin_value()
         ;
     };
   };
