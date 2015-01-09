@@ -196,6 +196,7 @@ int main(int argc, char **argv){
 
     g2.log();
 
+    // First approximation algorithm
     std::cout << "**************" << std::endl;
     
     std::list<unsigned> gwmin_is = g2.mwis_greedy_gwmin();
@@ -211,5 +212,19 @@ int main(int argc, char **argv){
 
     std::cout << "** Weight: " << g2.weight_of_set(gwmin_is) << std::endl;
 
+    // Second approximation algorithm
+    std::cout << "**************" << std::endl;
+    std::list<unsigned> gwmax_is = g2.mwis_greedy_gwmax();
+
+    std::cout << "* GWMAX greedy algorithm"
+              << std::endl
+              << "** Independent set: ";
+
+    for(auto n = gwmax_is.begin(); n != gwmax_is.end(); n++){
+      std::cout << *n << " ; ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "** Weight: " << g2.weight_of_set(gwmax_is) << std::endl;
   }
 }

@@ -254,6 +254,58 @@ std::list<unsigned> UndirectedGraph::mwis_greedy_gwmin(){
   return is;
 };
 
+std::list<unsigned> UndirectedGraph::mwis_greedy_gwmax(){
+  // Copy of current objet to further restore its state, should
+  // definitely be improved
+  UndirectedGraph g (*this);
+
+  while(this->number_of_edges() > 0){
+    auto vertex_iter = _vertices.cbegin();
+
+    // Greedy choice for the vertex to remove: the selecting-rule
+    // picks lowest gwmax_value(). If values are equal, the vertex
+    // that has the biggest degree is chosen (we try to get rid of all
+    // edges here)
+
+    unsigned chosen_vertex_id = vertex_iter->first;
+    double chosen_vertex_value = vertex_iter->second.gwmax_value();
+    double chosen_vertex_degree = vertex_iter->second._degree;
+    
+    ++vertex_iter;
+    for(; vertex_iter != _vertices.cend(); ++vertex_iter){
+      double current_value = vertex_iter->second.gwmax_value();
+      double current_degree = vertex_iter->second._degree;
+
+      if((current_value < chosen_vertex_value)
+         or (current_value == chosen_vertex_value
+             and current_degree > chosen_vertex_degree)){
+        // Better choice for greedy algorithm
+        chosen_vertex_id = vertex_iter->first;
+        chosen_vertex_value = current_value;
+      }
+    }
+
+    // Removing the vertex (and associated edges) from the graph
+    this->remove_vertex(chosen_vertex_id);
+
+    // Uncomment to log state of the updated graph with removed vertex
+    // and neighbours
+    // this->log();
+  }
+
+  // Independent set to return is the remaining vertices
+  std::list<unsigned> is;
+
+  for(auto vertex = _vertices.begin(); vertex != _vertices.end(); vertex++){
+    is.push_back(vertex->first);
+  }
+
+  // Restore the state of the current graph
+  *this = g;
+  
+  return is;
+};
+
 void UndirectedGraph::log() const{
   std::cout << "****************** Graph log ******************\n"
     << "* Vertices:\n";

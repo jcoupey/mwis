@@ -24,13 +24,21 @@ private:
     double gwmin_value() const{
       return (double) _weight / (_degree + 1);
     }
+
+    double gwmax_value() const{
+      // Getting inf when _degree is zero is fine with further
+      // comparisons
+      return (double) _weight /(_degree * (_degree + 1));
+    }
     
     // Print vertex information
     void log() const{
       std::cout << "Weight: " << _weight
                 << " ; degree: " << _degree
-                // << " ; selecting value for GWMIN "
-                // << this->gwmin_value()
+                << " ; selecting value for GWMIN "
+                << this->gwmin_value()
+                << " ; selecting value for GWMAX "
+                << this->gwmax_value()
         ;
     };
   };
@@ -55,7 +63,7 @@ private:
 
     // Print edge information
     void log() const{
-      std::cout << _first_vertex_id << "->"
+      std::cout << _first_vertex_id << "<->"
                 << _second_vertex_id
                 << " ; ";
     };
@@ -93,6 +101,8 @@ public:
   std::list<unsigned> mwis_for_path(const std::list<unsigned>& path) const;
 
   std::list<unsigned> mwis_greedy_gwmin();
+
+  std::list<unsigned> mwis_greedy_gwmax();
   
   void log() const;
 };
