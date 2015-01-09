@@ -18,24 +18,19 @@ void UndirectedGraph::add_vertex(unsigned id, unsigned weight){
 void UndirectedGraph::remove_vertex(unsigned id){
   auto target_vertex = _vertices.find(id);
   if(target_vertex != _vertices.end()){
+    // Removing all edges to neighbours of given vertex
+    std::list<unsigned> neighbours = this->neighbours_for_vertex(id);
+    for(auto vertex = neighbours.begin();
+        vertex != neighbours.end();
+        vertex++){
+      Edge target_edge (id, *vertex);
+      _edges.erase(target_edge);
+      // Updating neighbour degree
+      _vertices.find(*vertex)->second._degree--;
+    }
+    
     // Removing vertex
     _vertices.erase(target_vertex);
-    for(auto edge = _edges.begin(); edge != _edges.end(); edge++){
-      // Finding edges that should be removed as well
-      std::map<unsigned, Vertex>::iterator vertex_pair = _vertices.end();
-      if(edge->_first_vertex_id == id){
-        vertex_pair = _vertices.find(edge->_second_vertex_id);
-      }
-      if(edge->_second_vertex_id == id){
-        vertex_pair = _vertices.find(edge->_first_vertex_id);
-      }
-      if(vertex_pair != _vertices.end()){
-        // Current edge should be removed
-        _edges.erase(edge);
-        // Updating vertices degrees
-        vertex_pair->second._degree--;
-      }
-    }
   }
 };
 
