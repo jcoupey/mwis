@@ -208,14 +208,23 @@ std::list<unsigned> UndirectedGraph::mwis_greedy_gwmin(){
   while(this->number_of_vertices() > 0){
     auto vertex_iter = _vertices.cbegin();
 
-    // Greedy choice for a vertex
+    // Greedy choice for the vertex to add to independent set: the
+    // selecting-rule picks biggest gwmin_value(). If values are
+    // equal, the vertex that has the lowest degree is chosen (thus
+    // removing less neighbours)
+
     unsigned chosen_vertex_id = vertex_iter->first;
     double chosen_vertex_value = vertex_iter->second.gwmin_value();
+    double chosen_vertex_degree = vertex_iter->second._degree;
 
     ++vertex_iter;
     for(; vertex_iter != _vertices.cend(); ++vertex_iter){
       double current_value = vertex_iter->second.gwmin_value();
-      if(current_value > chosen_vertex_value){
+      double current_degree = vertex_iter->second._degree;
+
+      if((current_value > chosen_vertex_value)
+         or (current_value == chosen_vertex_value
+             and chosen_vertex_degree > current_degree)){
         // Better choice for greedy algorithm
         chosen_vertex_id = vertex_iter->first;
         chosen_vertex_value = current_value;
