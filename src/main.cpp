@@ -196,6 +196,13 @@ int main(int argc, char **argv){
 
     g2.log();
 
+    // Minorant for weight of a mwis
+    std::cout << "**************\n"
+              << "* Minorant for alpha\n"
+              << "** a mwis weigths at least: "
+              << g2.alpha_minorant()
+              << std::endl;
+
     // First approximation algorithm
     std::cout << "**************" << std::endl;
     

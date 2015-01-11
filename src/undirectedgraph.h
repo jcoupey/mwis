@@ -100,6 +100,8 @@ public:
 
   std::list<unsigned> mwis_for_path(const std::list<unsigned>& path) const;
 
+  double alpha_minorant() const;
+  
   std::list<unsigned> mwis_greedy_gwmin();
 
   std::list<unsigned> mwis_greedy_gwmax();

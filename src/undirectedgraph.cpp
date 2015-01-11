@@ -197,6 +197,14 @@ std::list<unsigned> UndirectedGraph::mwis_for_path(const std::list<unsigned>& pa
   return mwis;
 };
 
+double UndirectedGraph::alpha_minorant() const{
+  double sum = 0;
+  for(auto vertex = _vertices.cbegin(); vertex != _vertices.cend(); vertex++){
+    sum += vertex->second.gwmin_value();
+  }
+  return sum;
+};
+
 std::list<unsigned> UndirectedGraph::mwis_greedy_gwmin(){
   // Copy of current objet to further restore its state, should
   // definitely be improved
