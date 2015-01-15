@@ -84,13 +84,15 @@ void UndirectedGraph::add_edge(unsigned first_vertex_id,
 void UndirectedGraph::remove_edge(unsigned first_vertex_id,
                                   unsigned second_vertex_id){
   // Removing edge
-  Edge target_edge (first_vertex_id, second_vertex_id);
-  _edges.erase(target_edge);
-  // Updating degrees
-  auto first_vertex_pair = _vertices.find(first_vertex_id);
-  auto second_vertex_pair = _vertices.find(second_vertex_id);
-  first_vertex_pair->second._degree--;
-  second_vertex_pair->second._degree--;
+  Edge target_edge (first_vertex_id, second_vertex_id, 0);
+  if(_edges.erase(target_edge)){
+    // Updating degrees only if erase is successful (an edge really
+    // exists between the vertices)
+    auto first_vertex_pair = _vertices.find(first_vertex_id);
+    auto second_vertex_pair = _vertices.find(second_vertex_id);
+    first_vertex_pair->second._degree--;
+    second_vertex_pair->second._degree--;
+  }
 };
 
 bool UndirectedGraph::has_edge(unsigned first_vertex_id,
